@@ -781,11 +781,17 @@ class Psgdpr extends Module
         $messageList = CustomerThread::getCustomerMessages($customer->id);
 
         if (count($messageList) >= 1) {
+            if (version_compare(PHP_VERSION, '7.1', '>=') >= 0) {
+                $ipAddressAsInt = true;
+            } else {
+                $ipAddressAsInt = false;
+            }
             foreach ($messageList as $index => $message) {
+                $id_address = ($ipAddressAsInt) ? (int)$message['ip_address'] : $message['ip_address'];
                 array_push($messages, array(
                     'id_customer_thread' => $message['id_customer_thread'],
                     'message' => $message['message'],
-                    'ip' => long2ip($message['ip_address']),
+                    'ip' => long2ip($id_address),
                     'date_add' => $message['date_add'],
                 ));
             }
